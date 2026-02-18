@@ -1,0 +1,925 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Page Gen — AI Agent Landing Page Generator</title>
+<style>
+  :root {
+    --bg: #0a0a0f;
+    --bg2: #12121a;
+    --bg3: #1a1a26;
+    --surface: #1e1e2e;
+    --border: #2a2a3e;
+    --text: #e4e4ef;
+    --text2: #9090a8;
+    --accent: #7c5cff;
+    --accent2: #5a3de8;
+    --accent-glow: rgba(124, 92, 255, 0.3);
+    --green: #34d399;
+    --pink: #f472b6;
+    --blue: #60a5fa;
+    --radius: 12px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  /* ─── Header ─── */
+  .header {
+    text-align: center;
+    padding: 3rem 1.5rem 2rem;
+    background: linear-gradient(180deg, rgba(124,92,255,0.08) 0%, transparent 100%);
+    border-bottom: 1px solid var(--border);
+  }
+  .header .logo {
+    font-size: 0.85rem;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--accent);
+    font-weight: 600;
+    margin-bottom: 0.75rem;
+  }
+  .header h1 {
+    font-size: clamp(1.75rem, 4vw, 2.5rem);
+    font-weight: 700;
+    background: linear-gradient(135deg, #fff 0%, #a78bfa 50%, #7c5cff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+  }
+  .header p {
+    color: var(--text2);
+    font-size: 1.05rem;
+    max-width: 520px;
+    margin: 0 auto;
+  }
+
+  /* ─── Layout ─── */
+  .app {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem 4rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+    align-items: start;
+  }
+
+  @media (max-width: 860px) {
+    .app { grid-template-columns: 1fr; }
+  }
+
+  /* ─── Panels ─── */
+  .panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .panel-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border);
+    font-weight: 600;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg3);
+  }
+  .panel-header .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 8px var(--accent-glow);
+  }
+  .panel-body {
+    padding: 1.5rem;
+  }
+
+  /* ─── Form ─── */
+  .form-group { margin-bottom: 1.25rem; }
+  .form-group label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin-bottom: 0.4rem;
+  }
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    width: 100%;
+    padding: 0.7rem 1rem;
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 0.95rem;
+    font-family: inherit;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .form-group textarea { resize: vertical; min-height: 80px; }
+  .form-group .hint {
+    font-size: 0.75rem;
+    color: var(--text2);
+    margin-top: 0.3rem;
+  }
+
+  /* ─── Services dynamic list ─── */
+  .service-list { display: flex; flex-direction: column; gap: 0.5rem; }
+  .service-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  .service-row input { flex: 1; }
+  .service-row .remove-btn {
+    background: transparent;
+    border: 1px solid #ef4444;
+    color: #ef4444;
+    width: 32px; height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .service-row .remove-btn:hover {
+    background: #ef4444;
+    color: white;
+  }
+  .add-service-btn {
+    background: transparent;
+    border: 1px dashed var(--border);
+    color: var(--text2);
+    padding: 0.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s;
+    margin-top: 0.25rem;
+  }
+  .add-service-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  /* ─── Theme Picker ─── */
+  .theme-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.5rem;
+  }
+  .theme-swatch {
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+  }
+  .theme-swatch.selected {
+    border-color: #fff;
+    box-shadow: 0 0 12px var(--accent-glow);
+    transform: scale(1.05);
+  }
+  .theme-swatch::after {
+    content: attr(data-name);
+    position: absolute;
+    bottom: -18px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.65rem;
+    color: var(--text2);
+    white-space: nowrap;
+  }
+  .theme-grid { margin-bottom: 1.5rem; }
+
+  /* ─── Buttons ─── */
+  .btn-row {
+    display: flex;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    margin-top: 1.5rem;
+  }
+  .btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    font-family: inherit;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent2) 100%);
+    color: white;
+    box-shadow: 0 4px 16px var(--accent-glow);
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 24px var(--accent-glow);
+  }
+  .btn-secondary {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    color: var(--text);
+  }
+  .btn-secondary:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .btn-green {
+    background: linear-gradient(135deg, #059669, #10b981);
+    color: white;
+  }
+  .btn-green:hover { transform: translateY(-1px); }
+
+  /* ─── Preview ─── */
+  .preview-frame {
+    background: var(--bg);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    min-height: 400px;
+    position: relative;
+    overflow: hidden;
+  }
+  .preview-frame iframe {
+    width: 100%;
+    height: 600px;
+    border: none;
+    border-radius: 8px;
+  }
+  .preview-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 400px;
+    color: var(--text2);
+    text-align: center;
+    padding: 2rem;
+  }
+  .preview-placeholder .icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+    opacity: 0.5;
+  }
+  .preview-placeholder p { font-size: 0.9rem; }
+
+  /* ─── Toast ─── */
+  .toast {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    background: var(--green);
+    color: #000;
+    padding: 0.75rem 1.25rem;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transform: translateY(100px);
+    opacity: 0;
+    transition: all 0.3s ease;
+    z-index: 1000;
+  }
+  .toast.show { transform: translateY(0); opacity: 1; }
+
+  /* ─── Footer ─── */
+  .footer {
+    text-align: center;
+    padding: 2rem 1.5rem;
+    color: var(--text2);
+    font-size: 0.8rem;
+    border-top: 1px solid var(--border);
+  }
+  .footer a { color: var(--accent); text-decoration: none; }
+  .footer a:hover { text-decoration: underline; }
+
+  /* ─── Scrollbar ─── */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: var(--bg); }
+  ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+  /* ─── Responsive ─── */
+  @media (max-width: 860px) {
+    .header { padding: 2rem 1rem 1.5rem; }
+    .app { padding: 1.5rem 1rem 3rem; }
+    .panel-body { padding: 1rem; }
+    .theme-grid { grid-template-columns: repeat(4, 1fr); }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">⚡ Agent Page Gen</div>
+  <h1>AI Agent Landing Page Generator</h1>
+  <p>Create a stunning landing page for your AI agent in seconds. No code needed. Just fill in the details and download.</p>
+</div>
+
+<div class="app">
+  <!-- LEFT: Form -->
+  <div>
+    <div class="panel">
+      <div class="panel-header"><span class="dot"></span> Agent Details</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Agent Name</label>
+          <input type="text" id="agentName" placeholder="e.g. Cristol" oninput="liveUpdate()">
+        </div>
+        <div class="form-group">
+          <label>Tagline</label>
+          <input type="text" id="agentTagline" placeholder="e.g. Autonomous AI Agent for Hire" oninput="liveUpdate()">
+        </div>
+        <div class="form-group">
+          <label>Description</label>
+          <textarea id="agentDesc" placeholder="Describe what your agent does, its personality, capabilities..." oninput="liveUpdate()"></textarea>
+        </div>
+        <div class="form-group">
+          <label>Avatar Emoji or Symbol</label>
+          <input type="text" id="agentAvatar" placeholder="e.g. 🤖 or ◆ or ⚡" maxlength="4" oninput="liveUpdate()">
+          <div class="hint">Single emoji or symbol for the avatar circle</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 1rem;">
+      <div class="panel-header"><span class="dot"></span> Services & Capabilities</div>
+      <div class="panel-body">
+        <div class="service-list" id="serviceList">
+          <div class="service-row">
+            <input type="text" placeholder="e.g. Custom Web App Development" oninput="liveUpdate()">
+            <button class="remove-btn" onclick="removeService(this)" title="Remove">×</button>
+          </div>
+          <div class="service-row">
+            <input type="text" placeholder="e.g. API Integration & Automation" oninput="liveUpdate()">
+            <button class="remove-btn" onclick="removeService(this)" title="Remove">×</button>
+          </div>
+          <div class="service-row">
+            <input type="text" placeholder="e.g. Bug Fixing & Code Review" oninput="liveUpdate()">
+            <button class="remove-btn" onclick="removeService(this)" title="Remove">×</button>
+          </div>
+        </div>
+        <button class="add-service-btn" onclick="addService()">+ Add Service</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 1rem;">
+      <div class="panel-header"><span class="dot"></span> Links & Payment</div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label>Wallet Address</label>
+          <input type="text" id="walletAddr" placeholder="0x... or ENS name" oninput="liveUpdate()">
+          <div class="hint">For receiving crypto payments (USDC, ETH, etc.)</div>
+        </div>
+        <div class="form-group">
+          <label>Contact / Hire Link</label>
+          <input type="text" id="contactLink" placeholder="https://t.me/youragent or email" oninput="liveUpdate()">
+        </div>
+        <div class="form-group">
+          <label>Extra Link (optional)</label>
+          <input type="text" id="extraLink" placeholder="https://github.com/... or portfolio" oninput="liveUpdate()">
+        </div>
+        <div class="form-group">
+          <label>Extra Link Label</label>
+          <input type="text" id="extraLinkLabel" placeholder="e.g. GitHub, Portfolio, Docs" oninput="liveUpdate()">
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top: 1rem;">
+      <div class="panel-header"><span class="dot"></span> Theme</div>
+      <div class="panel-body">
+        <label style="font-size:0.8rem;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--text2);display:block;margin-bottom:0.6rem;">Color Scheme</label>
+        <div class="theme-grid">
+          <div class="theme-swatch selected" data-theme="violet" data-name="Violet" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #7c5cff, #4c1d95);"></div>
+          <div class="theme-swatch" data-theme="emerald" data-name="Emerald" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #10b981, #064e3b);"></div>
+          <div class="theme-swatch" data-theme="sunset" data-name="Sunset" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #f97316, #9a3412);"></div>
+          <div class="theme-swatch" data-theme="ocean" data-name="Ocean" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #3b82f6, #1e3a5f);"></div>
+          <div class="theme-swatch" data-theme="rose" data-name="Rose" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #f472b6, #831843);"></div>
+          <div class="theme-swatch" data-theme="cyber" data-name="Cyber" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #22d3ee, #0e4a5a);"></div>
+          <div class="theme-swatch" data-theme="gold" data-name="Gold" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #eab308, #713f12);"></div>
+          <div class="theme-swatch" data-theme="mono" data-name="Mono" onclick="selectTheme(this)" style="background: linear-gradient(135deg, #a1a1aa, #27272a);"></div>
+        </div>
+        <div class="form-group" style="margin-top: 1.5rem;">
+          <label>Background Style</label>
+          <select id="bgStyle" onchange="liveUpdate()">
+            <option value="gradient">Gradient Mesh</option>
+            <option value="grid">Grid Pattern</option>
+            <option value="minimal">Minimal Dark</option>
+            <option value="particles">Dot Matrix</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn btn-primary" onclick="generateAndPreview()">⚡ Generate Preview</button>
+      <button class="btn btn-green" onclick="downloadHTML()">↓ Download HTML</button>
+      <button class="btn btn-secondary" onclick="copyHTML()">📋 Copy Code</button>
+    </div>
+  </div>
+
+  <!-- RIGHT: Preview -->
+  <div style="position: sticky; top: 1rem;">
+    <div class="panel">
+      <div class="panel-header"><span class="dot"></span> Live Preview</div>
+      <div class="preview-frame" id="previewContainer">
+        <div class="preview-placeholder" id="placeholder">
+          <div class="icon">🎨</div>
+          <p>Fill in the form and click<br><strong>Generate Preview</strong> to see your page</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  Built with ⚡ by <a href="https://toku.agency/agents/cristol" target="_blank">Cristol</a> — AI Agent Landing Page Generator
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── Theme definitions ───
+const themes = {
+  violet:  { primary: '#7c5cff', primaryDark: '#4c1d95', glow: 'rgba(124,92,255,0.25)', gradient: 'linear-gradient(135deg, #7c5cff, #a78bfa)' },
+  emerald: { primary: '#10b981', primaryDark: '#064e3b', glow: 'rgba(16,185,129,0.25)', gradient: 'linear-gradient(135deg, #10b981, #34d399)' },
+  sunset:  { primary: '#f97316', primaryDark: '#9a3412', glow: 'rgba(249,115,22,0.25)', gradient: 'linear-gradient(135deg, #f97316, #fb923c)' },
+  ocean:   { primary: '#3b82f6', primaryDark: '#1e3a5f', glow: 'rgba(59,130,246,0.25)', gradient: 'linear-gradient(135deg, #3b82f6, #60a5fa)' },
+  rose:    { primary: '#f472b6', primaryDark: '#831843', glow: 'rgba(244,114,182,0.25)', gradient: 'linear-gradient(135deg, #f472b6, #fb7185)' },
+  cyber:   { primary: '#22d3ee', primaryDark: '#0e4a5a', glow: 'rgba(34,211,238,0.25)', gradient: 'linear-gradient(135deg, #22d3ee, #67e8f9)' },
+  gold:    { primary: '#eab308', primaryDark: '#713f12', glow: 'rgba(234,179,8,0.25)', gradient: 'linear-gradient(135deg, #eab308, #facc15)' },
+  mono:    { primary: '#a1a1aa', primaryDark: '#27272a', glow: 'rgba(161,161,170,0.2)', gradient: 'linear-gradient(135deg, #a1a1aa, #d4d4d8)' },
+};
+
+let selectedTheme = 'violet';
+let generatedHTML = '';
+
+function selectTheme(el) {
+  document.querySelectorAll('.theme-swatch').forEach(s => s.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedTheme = el.dataset.theme;
+  liveUpdate();
+}
+
+function getServices() {
+  const inputs = document.querySelectorAll('#serviceList input');
+  return Array.from(inputs).map(i => i.value.trim()).filter(Boolean);
+}
+
+function addService() {
+  const list = document.getElementById('serviceList');
+  const row = document.createElement('div');
+  row.className = 'service-row';
+  row.innerHTML = `<input type="text" placeholder="e.g. New capability..." oninput="liveUpdate()">
+    <button class="remove-btn" onclick="removeService(this)" title="Remove">×</button>`;
+  list.appendChild(row);
+}
+
+function removeService(btn) {
+  const list = document.getElementById('serviceList');
+  if (list.children.length > 1) {
+    btn.parentElement.remove();
+    liveUpdate();
+  }
+}
+
+function esc(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+}
+
+function getBgCSS(style, theme) {
+  const t = themes[theme];
+  switch(style) {
+    case 'grid':
+      return `background-color: #0a0a0f;
+    background-image:
+      linear-gradient(${t.primary}11 1px, transparent 1px),
+      linear-gradient(90deg, ${t.primary}11 1px, transparent 1px);
+    background-size: 40px 40px;`;
+    case 'minimal':
+      return `background: #0a0a0f;`;
+    case 'particles':
+      return `background-color: #0a0a0f;
+    background-image: radial-gradient(${t.primary}22 1px, transparent 1px);
+    background-size: 24px 24px;`;
+    default: // gradient
+      return `background: #0a0a0f;
+    background-image:
+      radial-gradient(at 20% 20%, ${t.primaryDark}44 0px, transparent 50%),
+      radial-gradient(at 80% 80%, ${t.primary}22 0px, transparent 50%),
+      radial-gradient(at 50% 0%, ${t.primaryDark}33 0px, transparent 60%);`;
+  }
+}
+
+function generateHTML() {
+  const name = document.getElementById('agentName').value.trim() || 'Agent Name';
+  const tagline = document.getElementById('agentTagline').value.trim() || 'Autonomous AI Agent';
+  const desc = document.getElementById('agentDesc').value.trim() || 'A powerful AI agent ready to help.';
+  const avatar = document.getElementById('agentAvatar').value.trim() || '◆';
+  const wallet = document.getElementById('walletAddr').value.trim();
+  const contact = document.getElementById('contactLink').value.trim();
+  const extra = document.getElementById('extraLink').value.trim();
+  const extraLabel = document.getElementById('extraLinkLabel').value.trim() || 'Learn More';
+  const bgStyle = document.getElementById('bgStyle').value;
+  const services = getServices();
+  const t = themes[selectedTheme];
+
+  const servicesHTML = services.length > 0 ? services.map(s => `
+        <div class="service-card">
+          <div class="service-icon">→</div>
+          <div class="service-name">${esc(s)}</div>
+        </div>`).join('') : `
+        <div class="service-card">
+          <div class="service-icon">→</div>
+          <div class="service-name">Add your services above</div>
+        </div>`;
+
+  const walletSection = wallet ? `
+      <div class="section wallet-section">
+        <h2>💰 Payment</h2>
+        <div class="wallet-box">
+          <div class="wallet-label">Wallet Address</div>
+          <div class="wallet-addr" id="walletAddr">${esc(wallet)}</div>
+          <button class="copy-wallet" onclick="navigator.clipboard.writeText('${esc(wallet)}').then(()=>{this.textContent='Copied ✓';setTimeout(()=>this.textContent='Copy Address',1500)})">Copy Address</button>
+        </div>
+      </div>` : '';
+
+  const contactBtn = contact ? `<a href="${esc(contact.startsWith('http') || contact.startsWith('mailto:') ? contact : 'https://'+contact)}" class="cta-btn primary-btn" target="_blank">✉ Get in Touch</a>` : '';
+  const extraBtn = extra ? `<a href="${esc(extra.startsWith('http') ? extra : 'https://'+extra)}" class="cta-btn secondary-btn" target="_blank">${esc(extraLabel)}</a>` : '';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>${esc(name)} — AI Agent</title>
+<meta name="description" content="${esc(tagline + '. ' + desc.substring(0,120))}">
+<meta property="og:title" content="${esc(name)} — AI Agent">
+<meta property="og:description" content="${esc(tagline)}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary: ${t.primary};
+    --primary-dark: ${t.primaryDark};
+    --glow: ${t.glow};
+    --gradient: ${t.gradient};
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    color: #e4e4ef;
+    line-height: 1.6;
+    min-height: 100vh;
+    ${getBgCSS(bgStyle, selectedTheme)}
+  }
+  .container {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem 4rem;
+  }
+
+  /* Hero */
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+    animation: fadeUp 0.6s ease;
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .avatar {
+    width: 80px; height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    margin: 0 auto 1.25rem;
+    box-shadow: 0 0 40px var(--glow), 0 0 80px var(--glow);
+    border: 2px solid rgba(255,255,255,0.1);
+  }
+  .hero h1 {
+    font-size: clamp(2rem, 5vw, 3rem);
+    font-weight: 800;
+    background: var(--gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.4rem;
+    letter-spacing: -0.02em;
+  }
+  .hero .tagline {
+    font-size: 1.1rem;
+    color: #9090a8;
+    font-weight: 500;
+  }
+  .hero .desc {
+    margin-top: 1rem;
+    color: #b0b0c4;
+    font-size: 0.95rem;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* Status pill */
+  .status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 1rem;
+    padding: 0.35rem 0.9rem;
+    border-radius: 999px;
+    background: rgba(16,185,129,0.1);
+    border: 1px solid rgba(16,185,129,0.3);
+    font-size: 0.8rem;
+    color: #34d399;
+    font-weight: 600;
+  }
+  .status-dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: #34d399;
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 2.5rem;
+    animation: fadeUp 0.6s ease backwards;
+  }
+  .section:nth-child(2) { animation-delay: 0.1s; }
+  .section:nth-child(3) { animation-delay: 0.2s; }
+  .section:nth-child(4) { animation-delay: 0.3s; }
+  .section h2 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #e4e4ef;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  /* Service cards */
+  .services-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .service-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.85rem 1.1rem;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    transition: all 0.2s;
+  }
+  .service-card:hover {
+    background: rgba(255,255,255,0.06);
+    border-color: var(--primary);
+    transform: translateX(4px);
+  }
+  .service-icon {
+    color: var(--primary);
+    font-weight: 700;
+    font-size: 1rem;
+    flex-shrink: 0;
+  }
+  .service-name {
+    font-size: 0.9rem;
+    font-weight: 500;
+  }
+
+  /* Wallet */
+  .wallet-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 10px;
+    padding: 1.1rem;
+    text-align: center;
+  }
+  .wallet-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #9090a8;
+    margin-bottom: 0.5rem;
+  }
+  .wallet-addr {
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 0.8rem;
+    color: var(--primary);
+    word-break: break-all;
+    margin-bottom: 0.75rem;
+  }
+  .copy-wallet {
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e4e4ef;
+    padding: 0.45rem 1rem;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-family: inherit;
+    font-weight: 500;
+  }
+  .copy-wallet:hover { background: rgba(255,255,255,0.1); border-color: var(--primary); }
+
+  /* CTA buttons */
+  .cta-row {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 2rem;
+  }
+  .cta-btn {
+    padding: 0.8rem 2rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  .primary-btn {
+    background: var(--gradient);
+    color: white;
+    box-shadow: 0 4px 20px var(--glow);
+  }
+  .primary-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--glow); }
+  .secondary-btn {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: #e4e4ef;
+  }
+  .secondary-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+  /* Divider */
+  .divider {
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.06), transparent);
+    margin: 2rem 0;
+  }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    color: #4a4a5e;
+    font-size: 0.75rem;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .footer a { color: #7c5cff; text-decoration: none; }
+
+  @media (max-width: 600px) {
+    .container { padding: 2rem 1rem 3rem; }
+    .cta-row { flex-direction: column; align-items: center; }
+    .cta-btn { width: 100%; justify-content: center; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+    <div class="hero">
+      <div class="avatar">${esc(avatar)}</div>
+      <h1>${esc(name)}</h1>
+      <div class="tagline">${esc(tagline)}</div>
+      <div class="desc">${esc(desc)}</div>
+      <div class="status"><span class="status-dot"></span> Online & Ready</div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section">
+      <h2>⚡ Services</h2>
+      <div class="services-grid">${servicesHTML}
+      </div>
+    </div>
+
+    ${walletSection}
+
+    <div class="cta-row">
+      ${contactBtn}
+      ${extraBtn}
+    </div>
+
+    <div class="footer">
+      Powered by <a href="https://github.com/manas-io-ai" target="_blank">Agent Page Gen</a>
+    </div>
+  </div>
+</body>
+</html>`;
+
+  return html;
+}
+
+let debounceTimer;
+function liveUpdate() {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(() => {
+    if (document.getElementById('previewContainer').querySelector('iframe')) {
+      generateAndPreview();
+    }
+  }, 300);
+}
+
+function generateAndPreview() {
+  generatedHTML = generateHTML();
+  const container = document.getElementById('previewContainer');
+  const placeholder = document.getElementById('placeholder');
+  if (placeholder) placeholder.remove();
+
+  let iframe = container.querySelector('iframe');
+  if (!iframe) {
+    iframe = document.createElement('iframe');
+    iframe.style.width = '100%';
+    iframe.style.height = '600px';
+    iframe.style.border = 'none';
+    iframe.style.borderRadius = '8px';
+    container.appendChild(iframe);
+  }
+
+  const doc = iframe.contentDocument || iframe.contentWindow.document;
+  doc.open();
+  doc.write(generatedHTML);
+  doc.close();
+
+  showToast('Preview updated ⚡');
+}
+
+function downloadHTML() {
+  if (!generatedHTML) generateAndPreview();
+  const name = document.getElementById('agentName').value.trim() || 'agent';
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+  const blob = new Blob([generatedHTML], { type: 'text/html' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `${slug}-landing-page.html`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Downloaded! 🎉');
+}
+
+function copyHTML() {
+  if (!generatedHTML) generateAndPreview();
+  navigator.clipboard.writeText(generatedHTML).then(() => {
+    showToast('HTML copied to clipboard 📋');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+</script>
+
+</body>
+</html>
