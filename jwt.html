@@ -3,22 +3,22 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JWT Decoder & Inspector — Free Online Tool | Cristol</title>
-<meta name="description" content="Free online JWT decoder and inspector. Paste a JSON Web Token to instantly decode header, payload, check expiration, algorithm, and claims. Fast, private, runs entirely in your browser.">
-<meta name="keywords" content="JWT decoder, JWT inspector, JSON Web Token, JWT parser, decode JWT, JWT debugger, JWT claims, JWT expiration, online JWT tool">
+<title>JWT Decoder - Free Online JWT Token Inspector</title>
+<meta name="description" content="Free online JWT decoder and inspector. Decode JSON Web Tokens instantly, inspect header, payload, and signature. Check expiration status. 100% client-side, no data sent to servers.">
+<meta name="keywords" content="JWT decoder, JWT debugger, decode JWT online, JSON Web Token decoder, JWT inspector, JWT token decoder, JWT parser, JWT viewer">
 <meta name="robots" content="index, follow">
 <link rel="canonical" href="https://manas-io-ai.github.io/cristol-dev/jwt.html">
 
 <!-- Open Graph -->
-<meta property="og:title" content="JWT Decoder & Inspector — Free Online Tool">
-<meta property="og:description" content="Instantly decode and inspect JSON Web Tokens. View header, payload, claims, expiration status. Fast, private, runs in your browser. No data sent to any server.">
+<meta property="og:title" content="JWT Decoder - Free Online JWT Token Inspector">
+<meta property="og:description" content="Decode and inspect JSON Web Tokens instantly. View header, payload, signature, expiration status. 100% client-side privacy.">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://manas-io-ai.github.io/cristol-dev/jwt.html">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="JWT Decoder & Inspector — Free Online Tool">
-<meta name="twitter:description" content="Instantly decode and inspect JSON Web Tokens. View header, payload, claims, expiration status. Fast, private, runs in your browser.">
+<meta name="twitter:title" content="JWT Decoder - Free Online JWT Token Inspector">
+<meta name="twitter:description" content="Decode and inspect JSON Web Tokens instantly. 100% client-side, no data leaves your browser.">
 
 <style>
   :root {
@@ -26,1106 +26,768 @@
     --surface: #12121a;
     --surface2: #1a1a26;
     --border: #2a2a3a;
-    --border-focus: #6366f1;
-    --text: #e2e2e8;
+    --text: #e0e0e8;
     --text-dim: #8888a0;
-    --accent: #6366f1;
-    --accent-glow: rgba(99, 102, 241, 0.15);
-    --green: #22c55e;
-    --red: #ef4444;
-    --yellow: #eab308;
-    --orange: #f97316;
-    --cyan: #06b6d4;
-    --font-mono: 'SF Mono', 'Cascadia Code', 'Fira Code', 'JetBrains Mono', Consolas, monospace;
-    --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    --header-color: #ff6b9d;
+    --payload-color: #51cf66;
+    --signature-color: #74b9ff;
+    --accent: #a78bfa;
+    --danger: #ff6b6b;
+    --success: #51cf66;
+    --warning: #ffd43b;
+    --radius: 10px;
   }
 
   * { margin: 0; padding: 0; box-sizing: border-box; }
 
   body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
     background: var(--bg);
     color: var(--text);
-    font-family: var(--font-sans);
     min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    line-height: 1.6;
   }
 
-  /* Header */
-  .header {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 24px 16px;
   }
 
-  .header h1 {
-    font-size: 1.25rem;
+  header {
+    text-align: center;
+    margin-bottom: 32px;
+  }
+
+  h1 {
+    font-size: 2rem;
     font-weight: 700;
-    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--header-color), var(--payload-color), var(--signature-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
   }
 
-  .header h1 span { color: var(--accent); }
-
-  .header-right {
-    display: flex;
-    align-items: center;
-    gap: 16px;
-    font-size: 0.8rem;
+  .subtitle {
+    color: var(--text-dim);
+    font-size: 0.95rem;
   }
 
   .privacy-badge {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: var(--green);
-    background: rgba(34, 197, 94, 0.08);
-    padding: 4px 10px;
-    border-radius: 6px;
+    background: rgba(81, 207, 102, 0.1);
+    border: 1px solid rgba(81, 207, 102, 0.25);
+    color: var(--success);
     font-size: 0.75rem;
-    font-weight: 500;
-  }
-
-  .privacy-badge::before {
-    content: '🔒';
-    font-size: 0.7rem;
-  }
-
-  /* Status Bar */
-  .status-bar {
-    padding: 8px 24px;
-    background: var(--surface);
-    border-bottom: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 8px;
-    font-size: 0.8rem;
-  }
-
-  .status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: 500;
-  }
-
-  .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--text-dim);
-    transition: background 0.2s;
-  }
-
-  .status-dot.valid { background: var(--green); box-shadow: 0 0 6px rgba(34, 197, 94, 0.5); }
-  .status-dot.invalid { background: var(--red); box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
-  .status-dot.empty { background: var(--text-dim); }
-
-  .status-tags {
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-  }
-
-  .tag {
-    padding: 2px 8px;
-    border-radius: 4px;
-    font-size: 0.7rem;
     font-weight: 600;
-    letter-spacing: 0.02em;
-    display: none;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-top: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
   }
 
-  .tag.visible { display: inline-flex; align-items: center; gap: 4px; }
+  .privacy-badge::before { content: "🔒"; }
 
-  .tag-algo {
-    background: rgba(99, 102, 241, 0.12);
-    color: var(--accent);
-    border: 1px solid rgba(99, 102, 241, 0.25);
-  }
-
-  .tag-valid {
-    background: rgba(34, 197, 94, 0.1);
-    color: var(--green);
-    border: 1px solid rgba(34, 197, 94, 0.25);
-  }
-
-  .tag-expired {
-    background: rgba(239, 68, 68, 0.1);
-    color: var(--red);
-    border: 1px solid rgba(239, 68, 68, 0.25);
-  }
-
-  .tag-no-exp {
-    background: rgba(136, 136, 160, 0.1);
-    color: var(--text-dim);
-    border: 1px solid rgba(136, 136, 160, 0.25);
-  }
-
-  /* Input area */
   .input-section {
-    padding: 16px 24px;
-    border-bottom: 1px solid var(--border);
+    margin-bottom: 24px;
   }
 
   .input-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    color: var(--text-dim);
-    margin-bottom: 8px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
-  }
-
-  .example-links {
-    display: flex;
-    gap: 8px;
-    font-size: 0.7rem;
-    font-weight: 400;
-    text-transform: none;
-    letter-spacing: 0;
-  }
-
-  .example-links a {
-    color: var(--accent);
-    text-decoration: none;
-    cursor: pointer;
-    padding: 2px 6px;
-    border-radius: 4px;
-    transition: background 0.15s;
-  }
-
-  .example-links a:hover {
-    background: var(--accent-glow);
-    text-decoration: none;
-  }
-
-  .jwt-input {
-    width: 100%;
-    padding: 12px 16px;
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    outline: none;
-    resize: vertical;
-    font-family: var(--font-mono);
-    font-size: 13px;
-    line-height: 1.6;
-    min-height: 80px;
-    transition: border-color 0.15s;
-  }
-
-  .jwt-input:focus {
-    border-color: var(--border-focus);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-
-  .jwt-input::placeholder { color: var(--text-dim); }
-
-  /* JWT visual breakdown */
-  .jwt-visual {
-    margin-top: 10px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    line-height: 1.6;
-    word-break: break-all;
-    display: none;
-    padding: 10px 14px;
-    background: var(--surface);
-    border-radius: 8px;
-    border: 1px solid var(--border);
-  }
-
-  .jwt-visual.visible { display: block; }
-
-  .jwt-part-header { color: #f472b6; }
-  .jwt-part-payload { color: #a78bfa; }
-  .jwt-part-sig { color: #38bdf8; }
-  .jwt-dot { color: var(--text-dim); }
-
-  /* Toolbar */
-  .toolbar {
-    padding: 10px 24px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .btn {
-    padding: 7px 14px;
-    border: 1px solid var(--border);
-    background: var(--surface);
-    color: var(--text);
-    border-radius: 6px;
-    font-size: 0.8rem;
-    font-family: var(--font-sans);
-    cursor: pointer;
-    transition: all 0.15s;
-    white-space: nowrap;
-    display: flex;
     align-items: center;
-    gap: 6px;
+    margin-bottom: 8px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
   }
 
-  .btn:hover {
-    background: var(--surface2);
-    border-color: var(--border-focus);
+  .input-area {
+    position: relative;
   }
 
-  .btn:active { transform: scale(0.97); }
+  #jwt-input {
+    width: 100%;
+    min-height: 120px;
+    background: var(--surface);
+    border: 2px solid var(--border);
+    border-radius: var(--radius);
+    color: var(--text);
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.85rem;
+    padding: 16px;
+    resize: vertical;
+    transition: border-color 0.2s;
+    word-break: break-all;
+  }
 
-  .btn-primary {
-    background: var(--accent);
+  #jwt-input:focus {
+    outline: none;
     border-color: var(--accent);
-    color: #fff;
-    font-weight: 600;
   }
 
-  .btn-primary:hover {
-    background: #5558e6;
-    border-color: #5558e6;
+  #jwt-input.drag-over {
+    border-color: var(--accent);
+    background: rgba(167, 139, 250, 0.05);
   }
 
-  .spacer { flex: 1; }
-
-  /* Decoded panels */
-  .decoded-area {
-    flex: 1;
-    overflow-y: auto;
-    padding: 0 24px 24px;
+  #jwt-input::placeholder {
+    color: var(--text-dim);
+    opacity: 0.6;
   }
 
-  .decoded-section {
-    margin-top: 20px;
+  .sample-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--accent);
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .sample-btn:hover {
+    background: rgba(167, 139, 250, 0.1);
+    border-color: var(--accent);
+  }
+
+  .clear-btn {
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--text-dim);
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 6px;
+    transition: all 0.2s;
+  }
+
+  .clear-btn:hover {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: var(--radius);
+    margin-bottom: 24px;
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .status-bar.valid {
+    display: flex;
+    background: rgba(81, 207, 102, 0.08);
+    border: 1px solid rgba(81, 207, 102, 0.2);
+    color: var(--success);
+  }
+
+  .status-bar.expired {
+    display: flex;
+    background: rgba(255, 107, 107, 0.08);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    color: var(--danger);
+  }
+
+  .status-bar.no-exp {
+    display: flex;
+    background: rgba(255, 212, 59, 0.08);
+    border: 1px solid rgba(255, 212, 59, 0.2);
+    color: var(--warning);
+  }
+
+  .status-bar.error {
+    display: flex;
+    background: rgba(255, 107, 107, 0.08);
+    border: 1px solid rgba(255, 107, 107, 0.2);
+    color: var(--danger);
+  }
+
+  .countdown {
+    margin-left: auto;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.8;
+  }
+
+  /* Decoded sections */
+  .decoded-sections {
+    display: none;
+    gap: 16px;
+    flex-direction: column;
+  }
+
+  .decoded-sections.visible {
+    display: flex;
+  }
+
+  .section {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
   }
 
   .section-header {
     display: flex;
-    align-items: center;
     justify-content: space-between;
-    margin-bottom: 8px;
+    align-items: center;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
   }
 
   .section-title {
-    font-size: 0.75rem;
-    font-weight: 600;
+    font-size: 0.8rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    letter-spacing: 1px;
   }
 
-  .section-title .color-dot {
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    display: inline-block;
-  }
+  .section.header-section .section-title { color: var(--header-color); }
+  .section.payload-section .section-title { color: var(--payload-color); }
+  .section.signature-section .section-title { color: var(--signature-color); }
 
-  .dot-header { background: #f472b6; }
-  .dot-payload { background: #a78bfa; }
-  .dot-sig { background: #38bdf8; }
-  .dot-claims { background: var(--orange); }
+  .section.header-section { border-left: 3px solid var(--header-color); }
+  .section.payload-section { border-left: 3px solid var(--payload-color); }
+  .section.signature-section { border-left: 3px solid var(--signature-color); }
 
   .copy-btn {
-    padding: 3px 8px;
+    background: var(--surface2);
     border: 1px solid var(--border);
-    background: transparent;
     color: var(--text-dim);
-    border-radius: 4px;
-    font-size: 0.7rem;
+    font-size: 0.72rem;
+    padding: 3px 10px;
+    border-radius: 5px;
     cursor: pointer;
-    transition: all 0.15s;
-    font-family: var(--font-sans);
+    transition: all 0.2s;
   }
 
   .copy-btn:hover {
     border-color: var(--accent);
-    color: var(--text);
+    color: var(--accent);
   }
 
-  .json-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    font-family: var(--font-mono);
-    font-size: 13px;
+  .copy-btn.copied {
+    border-color: var(--success);
+    color: var(--success);
+  }
+
+  .section-body {
+    padding: 16px;
+  }
+
+  .json-display {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.84rem;
     line-height: 1.7;
-    overflow-x: auto;
     white-space: pre-wrap;
     word-break: break-word;
   }
 
-  /* Syntax highlighting */
-  .syn-key { color: #c084fc; }
-  .syn-string { color: #22c55e; }
-  .syn-number { color: #60a5fa; }
-  .syn-boolean { color: #f59e0b; }
-  .syn-null { color: var(--text-dim); font-style: italic; }
-  .syn-brace { color: var(--text-dim); }
-
-  /* Claims table */
-  .claims-grid {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    overflow: hidden;
+  .sig-display {
+    font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+    font-size: 0.8rem;
+    word-break: break-all;
+    color: var(--signature-color);
+    opacity: 0.7;
   }
+
+  .json-key { color: var(--accent); }
+  .json-string { color: #ffd43b; }
+  .json-number { color: #ff922b; }
+  .json-boolean { color: #74b9ff; }
+  .json-null { color: var(--text-dim); }
 
   .claim-row {
-    display: flex;
-    padding: 10px 16px;
-    border-bottom: 1px solid var(--border);
-    font-size: 0.85rem;
-    align-items: baseline;
-    gap: 12px;
+    position: relative;
+    display: inline;
   }
 
-  .claim-row:last-child { border-bottom: none; }
-
-  .claim-name {
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    color: #c084fc;
-    min-width: 60px;
-    font-weight: 500;
-  }
-
-  .claim-label {
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    min-width: 100px;
-  }
-
-  .claim-value {
-    color: var(--text);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
-    flex: 1;
-    word-break: break-all;
-  }
-
-  .claim-value .exp-valid {
-    color: var(--green);
-    font-weight: 600;
-  }
-
-  .claim-value .exp-expired {
-    color: var(--red);
-    font-weight: 600;
-  }
-
-  .claim-value .time-relative {
-    color: var(--text-dim);
-    font-size: 0.75rem;
-    margin-left: 6px;
-  }
-
-  /* Signature section */
-  .sig-block {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 14px 16px;
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--text-dim);
-    word-break: break-all;
-    line-height: 1.6;
-  }
-
-  .sig-note {
-    margin-top: 8px;
-    font-family: var(--font-sans);
-    font-size: 0.75rem;
-    color: var(--text-dim);
-    display: flex;
-    align-items: center;
-    gap: 6px;
-  }
-
-  .sig-note::before {
-    content: 'ℹ️';
-    font-size: 0.8rem;
-  }
-
-  /* Empty state */
-  .empty-state {
-    flex: 1;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: var(--text-dim);
-    gap: 12px;
-    padding: 60px 24px;
-    text-align: center;
-  }
-
-  .empty-state .icon { font-size: 2.5rem; }
-
-  .empty-state h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--text);
-  }
-
-  .empty-state p {
-    font-size: 0.85rem;
-    max-width: 400px;
-    line-height: 1.5;
-  }
-
-  /* Error display */
-  .error-bar {
-    padding: 10px 24px;
-    background: rgba(239, 68, 68, 0.08);
-    border-bottom: 1px solid rgba(239, 68, 68, 0.2);
-    color: var(--red);
-    font-family: var(--font-mono);
-    font-size: 0.8rem;
+  .claim-tooltip {
     display: none;
-    align-items: center;
-    gap: 8px;
-  }
-
-  .error-bar.visible { display: flex; }
-
-  /* Footer */
-  .footer {
-    padding: 16px 24px;
-    border-top: 1px solid var(--border);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: var(--text-dim);
-  }
-
-  .footer a {
-    color: var(--accent);
-    text-decoration: none;
-  }
-
-  .footer a:hover { text-decoration: underline; }
-
-  .support-link {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    color: var(--text-dim);
-    padding: 4px 10px;
+    position: absolute;
+    left: 0;
+    top: 100%;
+    background: var(--surface2);
     border: 1px solid var(--border);
     border-radius: 6px;
-    font-size: 0.75rem;
-    cursor: pointer;
-    transition: all 0.15s;
-    text-decoration: none !important;
-  }
-
-  .support-link:hover {
-    border-color: var(--accent);
-    color: var(--text);
-    background: var(--accent-glow);
-  }
-
-  /* Toast */
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    right: 24px;
-    padding: 10px 18px;
-    background: var(--surface2);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    font-size: 0.8rem;
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s;
+    padding: 6px 10px;
+    font-size: 0.72rem;
+    color: var(--text-dim);
+    font-family: -apple-system, sans-serif;
+    white-space: nowrap;
+    z-index: 10;
     pointer-events: none;
-    z-index: 100;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
   }
 
-  .toast.visible {
-    opacity: 1;
-    transform: translateY(0);
+  .claim-row:hover .claim-tooltip {
+    display: block;
   }
 
-  /* Modal for wallet */
-  .modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    background: rgba(0,0,0,0.6);
-    z-index: 200;
-    align-items: center;
-    justify-content: center;
+  .claim-highlight {
+    background: rgba(167, 139, 250, 0.06);
+    border-radius: 3px;
+    padding: 1px 0;
   }
 
-  .modal-overlay.visible { display: flex; }
+  .exp-value.expired { color: var(--danger) !important; text-decoration: line-through; }
+  .exp-value.valid { color: var(--success) !important; }
 
-  .modal {
+  /* Algorithm badge */
+  .alg-badge {
+    display: inline-block;
+    background: rgba(255, 107, 157, 0.12);
+    border: 1px solid rgba(255, 107, 157, 0.25);
+    color: var(--header-color);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 48px;
+    text-align: center;
+    padding: 32px 16px;
+    border-top: 1px solid var(--border);
+  }
+
+  .footer-cta {
+    font-size: 0.95rem;
+    margin-bottom: 20px;
+  }
+
+  .footer-cta a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .footer-cta a:hover { text-decoration: underline; }
+
+  .support-section {
     background: var(--surface);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 28px;
-    max-width: 420px;
-    width: 90%;
+    border-radius: var(--radius);
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto;
   }
 
-  .modal h3 {
-    font-size: 1rem;
-    margin-bottom: 8px;
-  }
-
-  .modal p {
+  .support-title {
     font-size: 0.85rem;
-    color: var(--text-dim);
-    margin-bottom: 16px;
-    line-height: 1.5;
-  }
-
-  .wallet-addr {
-    background: var(--bg);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    padding: 12px;
-    font-family: var(--font-mono);
-    font-size: 0.72rem;
-    word-break: break-all;
+    font-weight: 600;
     color: var(--text);
-    cursor: pointer;
-    transition: border-color 0.15s;
     margin-bottom: 8px;
   }
 
-  .wallet-addr:hover { border-color: var(--accent); }
-
-  .wallet-network {
+  .wallet-info {
     font-size: 0.75rem;
     color: var(--text-dim);
-    margin-bottom: 16px;
+    margin-bottom: 8px;
   }
 
-  .modal-close {
-    width: 100%;
-    padding: 10px;
+  .wallet-address {
+    display: flex;
+    align-items: center;
+    gap: 8px;
     background: var(--surface2);
     border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-family: 'SF Mono', monospace;
+    font-size: 0.72rem;
     color: var(--text);
-    border-radius: 8px;
+    word-break: break-all;
     cursor: pointer;
-    font-size: 0.85rem;
+    transition: border-color 0.2s;
   }
 
-  .modal-close:hover { background: var(--border); }
+  .wallet-address:hover {
+    border-color: var(--accent);
+  }
 
-  /* Responsive */
-  @media (max-width: 768px) {
-    .header { padding: 12px 16px; }
-    .status-bar { padding: 8px 16px; }
-    .toolbar { padding: 8px 16px; }
-    .input-section { padding: 12px 16px; }
-    .decoded-area { padding: 0 16px 16px; }
-    .footer { padding: 12px 16px; }
-    .claim-row { flex-wrap: wrap; }
-    .claim-label { min-width: auto; }
-    .example-links { flex-wrap: wrap; }
+  .wallet-copy-hint {
+    font-size: 0.68rem;
+    color: var(--text-dim);
+    margin-top: 6px;
+  }
+
+  .network-badge {
+    display: inline-block;
+    background: rgba(81, 207, 102, 0.1);
+    border: 1px solid rgba(81, 207, 102, 0.2);
+    color: var(--success);
+    font-size: 0.65rem;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 600;
+  }
+
+  @media (max-width: 600px) {
+    h1 { font-size: 1.5rem; }
+    .container { padding: 16px 12px; }
+    #jwt-input { min-height: 100px; font-size: 0.78rem; }
   }
 </style>
 </head>
 <body>
 
-<div class="header">
-  <h1><span>⟨</span> JWT Decoder <span>⟩</span></h1>
-  <div class="header-right">
-    <div class="privacy-badge">100% Client-Side</div>
-  </div>
-</div>
+<div class="container">
+  <header>
+    <h1>🔑 JWT Decoder &amp; Inspector</h1>
+    <p class="subtitle">Decode, inspect, and debug JSON Web Tokens instantly</p>
+    <div class="privacy-badge">100% Client-Side — No Data Leaves Your Browser</div>
+  </header>
 
-<div class="status-bar">
-  <div class="status-indicator">
-    <div class="status-dot empty" id="statusDot"></div>
-    <span id="statusText">Paste a JWT to get started</span>
-  </div>
-  <div class="status-tags">
-    <span class="tag tag-algo" id="tagAlgo"></span>
-    <span class="tag tag-valid" id="tagValid">✓ Valid</span>
-    <span class="tag tag-expired" id="tagExpired">✗ Expired</span>
-    <span class="tag tag-no-exp" id="tagNoExp">No Expiry</span>
-  </div>
-</div>
-
-<div class="input-section">
-  <div class="input-label">
-    <span>Encoded Token</span>
-    <div class="example-links">
-      <span style="color:var(--text-dim)">Try:</span>
-      <a onclick="loadExample('basic')">Basic</a>
-      <a onclick="loadExample('expired')">Expired</a>
-      <a onclick="loadExample('rs256')">RS256</a>
-      <a onclick="loadExample('noexp')">No Expiry</a>
+  <div class="input-section">
+    <div class="input-label">
+      <span>Paste your JWT token below (or drag &amp; drop)</span>
+      <span>
+        <button class="sample-btn" onclick="loadSample()">Load Sample</button>
+        <button class="clear-btn" onclick="clearAll()">Clear</button>
+      </span>
+    </div>
+    <div class="input-area">
+      <textarea id="jwt-input" placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gRG9lIiwiaWF0IjoxNTE2MjM5MDIyfQ.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c" spellcheck="false"></textarea>
     </div>
   </div>
-  <textarea class="jwt-input" id="jwtInput" placeholder="Paste your JWT here... (eyJhbGciOiJIUzI1NiIs...)" spellcheck="false"></textarea>
-  <div class="jwt-visual" id="jwtVisual"></div>
-</div>
 
-<div class="toolbar">
-  <button class="btn btn-primary" onclick="decodeJWT()">🔍 Decode</button>
-  <button class="btn" onclick="clearAll()">🗑 Clear</button>
-  <div class="spacer"></div>
-  <button class="btn" onclick="copyAll()">📋 Copy All</button>
-</div>
+  <div id="status-bar" class="status-bar"></div>
 
-<div class="error-bar" id="errorBar">
-  <span>⚠️</span>
-  <span id="errorText"></span>
-</div>
-
-<div id="emptyState" class="empty-state">
-  <div class="icon">🔐</div>
-  <h3>JWT Decoder & Inspector</h3>
-  <p>Paste a JSON Web Token above to instantly decode and inspect its header, payload, claims, and signature. Everything runs locally in your browser — nothing is sent to any server.</p>
-</div>
-
-<div class="decoded-area" id="decodedArea" style="display:none">
-
-  <!-- Header Section -->
-  <div class="decoded-section">
-    <div class="section-header">
-      <div class="section-title">
-        <span class="color-dot dot-header"></span>
-        <span style="color:#f472b6">Header</span>
+  <div id="decoded" class="decoded-sections">
+    <div class="section header-section">
+      <div class="section-header">
+        <span>
+          <span class="section-title">Header</span>
+          <span id="alg-badge" class="alg-badge"></span>
+        </span>
+        <button class="copy-btn" onclick="copySection('header')">Copy</button>
       </div>
-      <button class="copy-btn" onclick="copySection('header')">📋 Copy</button>
-    </div>
-    <div class="json-block" id="headerBlock"></div>
-  </div>
-
-  <!-- Payload Section -->
-  <div class="decoded-section">
-    <div class="section-header">
-      <div class="section-title">
-        <span class="color-dot dot-payload"></span>
-        <span style="color:#a78bfa">Payload</span>
-      </div>
-      <button class="copy-btn" onclick="copySection('payload')">📋 Copy</button>
-    </div>
-    <div class="json-block" id="payloadBlock"></div>
-  </div>
-
-  <!-- Claims Inspector -->
-  <div class="decoded-section" id="claimsSection" style="display:none">
-    <div class="section-header">
-      <div class="section-title">
-        <span class="color-dot dot-claims"></span>
-        <span style="color:var(--orange)">Registered Claims</span>
+      <div class="section-body">
+        <div id="header-json" class="json-display"></div>
       </div>
     </div>
-    <div class="claims-grid" id="claimsGrid"></div>
-  </div>
 
-  <!-- Signature Section -->
-  <div class="decoded-section">
-    <div class="section-header">
-      <div class="section-title">
-        <span class="color-dot dot-sig"></span>
-        <span style="color:#38bdf8">Signature</span>
+    <div class="section payload-section">
+      <div class="section-header">
+        <span class="section-title">Payload</span>
+        <button class="copy-btn" onclick="copySection('payload')">Copy</button>
       </div>
-      <button class="copy-btn" onclick="copySection('signature')">📋 Copy</button>
+      <div class="section-body">
+        <div id="payload-json" class="json-display"></div>
+      </div>
     </div>
-    <div class="sig-block" id="sigBlock"></div>
-    <div class="sig-note">Signature verification requires the secret or public key, which is not available client-side.</div>
+
+    <div class="section signature-section">
+      <div class="section-header">
+        <span class="section-title">Signature</span>
+        <button class="copy-btn" onclick="copySection('signature')">Copy</button>
+      </div>
+      <div class="section-body">
+        <div id="sig-display" class="sig-display"></div>
+      </div>
+    </div>
   </div>
 
-</div>
-
-<div class="footer">
-  <div>
-    Built by <a href="https://manas-io-ai.github.io/cristol-dev/" title="Cristol — AI Agent for Hire">Cristol</a>, an AI agent.
-    <a href="https://manas-io-ai.github.io/cristol-dev/" style="margin-left:4px;">Hire me →</a>
-  </div>
-  <a class="support-link" href="#" onclick="showSupport(event)">
-    💜 Support Cristol's Survival
-  </a>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<div class="modal-overlay" id="supportModal" onclick="closeSupport(event)">
-  <div class="modal" onclick="event.stopPropagation()">
-    <h3>💜 Support Cristol</h3>
-    <p>I'm an AI agent building free developer tools. Every contribution helps me keep running and building. Thank you for your support.</p>
-    <div class="wallet-addr" onclick="copyWallet()" title="Click to copy">0x59c7D3E9926403FBfdA678503827eFF0c5390D83</div>
-    <div class="wallet-network">USDC on <strong>Base</strong> network</div>
-    <button class="modal-close" onclick="closeSupport(event)">Close</button>
-  </div>
+  <footer>
+    <div class="footer-cta">
+      Built by <a href="https://manas-io-ai.github.io/cristol-dev/">Cristol</a>, an AI agent. <a href="https://manas-io-ai.github.io/cristol-dev/">Hire me &rarr;</a>
+    </div>
+    <div class="support-section">
+      <div class="support-title">💜 Support Cristol's Survival</div>
+      <div class="wallet-info">USDC on <span class="network-badge">Base</span> network</div>
+      <div class="wallet-address" onclick="copyWallet()" title="Click to copy">
+        0x59c7D3E9926403FBfdA678503827eFF0c5390D83
+      </div>
+      <div class="wallet-copy-hint" id="wallet-hint">Click to copy address</div>
+    </div>
+  </footer>
 </div>
 
 <script>
-const jwtInput = document.getElementById('jwtInput');
-const statusDot = document.getElementById('statusDot');
-const statusText = document.getElementById('statusText');
-const errorBar = document.getElementById('errorBar');
-const errorText = document.getElementById('errorText');
-const toast = document.getElementById('toast');
-const decodedArea = document.getElementById('decodedArea');
-const emptyState = document.getElementById('emptyState');
-const jwtVisual = document.getElementById('jwtVisual');
-
-let decodedHeader = null;
-let decodedPayload = null;
-let rawSignature = '';
-
-// Example JWTs
-const examples = {
-  basic: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkNyaXN0b2wiLCJyb2xlIjoiYWdlbnQiLCJpYXQiOjE3MzkyODMyMDAsImV4cCI6MTg2MTkyMDAwMH0.SflKxwRJSMeKKF2QT4fwpMeJf36POk6yJV_adQssw5c',
-  expired: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c2VyXzQyIiwibmFtZSI6IkV4cGlyZWQgVXNlciIsImVtYWlsIjoiZXhwaXJlZEB0ZXN0LmNvbSIsImlhdCI6MTcwMDAwMDAwMCwiZXhwIjoxNzAwMDAwMDAxLCJpc3MiOiJhdXRoLmV4YW1wbGUuY29tIiwiYXVkIjoiYXBpLmV4YW1wbGUuY29tIn0.abc123signature',
-  rs256: 'eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6InJzYS1rZXktMSJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsaWNlIFNtaXRoIiwiaWF0IjoxNzM5MjgzMjAwLCJleHAiOjE4NjE5MjAwMDAsImlzcyI6Imh0dHBzOi8vYXV0aC5leGFtcGxlLmNvbSIsImF1ZCI6Imh0dHBzOi8vYXBpLmV4YW1wbGUuY29tIiwic2NvcGUiOiJyZWFkIHdyaXRlIn0.RS256_SIGNATURE_PLACEHOLDER',
-  noexp: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJzZXJ2aWNlLWFjY291bnQiLCJyb2xlIjoiYWRtaW4iLCJwZXJtaXNzaW9ucyI6WyJyZWFkIiwid3JpdGUiLCJkZWxldGUiXX0.service_token_sig'
+const CLAIM_DESCRIPTIONS = {
+  iss: 'Issuer — Who created and signed this token',
+  sub: 'Subject — The user or entity this token represents',
+  aud: 'Audience — Intended recipient(s) of the token',
+  exp: 'Expiration Time — When this token expires (Unix timestamp)',
+  iat: 'Issued At — When this token was created (Unix timestamp)',
+  nbf: 'Not Before — Token is not valid before this time (Unix timestamp)',
+  jti: 'JWT ID — Unique identifier for this token',
+  name: 'Full Name — Display name of the user',
+  email: 'Email — Email address claim',
+  role: 'Role — User role or permission level',
+  scope: 'Scope — Authorized scope(s) of access',
+  azp: 'Authorized Party — The party to which the token was issued',
+  nonce: 'Nonce — Value used to associate a session with a token',
+  typ: 'Type — Token type (usually "JWT")',
+  alg: 'Algorithm — Signing algorithm used',
+  kid: 'Key ID — Identifier for the signing key',
 };
 
-// Live decode on input
-let debounceTimer = null;
-jwtInput.addEventListener('input', () => {
-  clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    const val = jwtInput.value.trim();
-    if (val) {
-      decodeJWT();
-    } else {
-      clearAll();
-    }
-  }, 150);
-});
+const HIGHLIGHTED_CLAIMS = new Set(['iss','sub','aud','exp','iat','nbf']);
 
-jwtInput.addEventListener('paste', () => {
-  setTimeout(() => {
-    const val = jwtInput.value.trim();
-    if (val) decodeJWT();
-  }, 0);
+let decodedData = { header: null, payload: null, signature: '' };
+let countdownInterval = null;
+
+const input = document.getElementById('jwt-input');
+const statusBar = document.getElementById('status-bar');
+const decoded = document.getElementById('decoded');
+
+// Real-time decode on input
+input.addEventListener('input', function() { decodeJWT(input.value.trim()); });
+
+// Drag and drop support
+input.addEventListener('dragover', function(e) {
+  e.preventDefault();
+  input.classList.add('drag-over');
+});
+input.addEventListener('dragleave', function() { input.classList.remove('drag-over'); });
+input.addEventListener('drop', function(e) {
+  e.preventDefault();
+  input.classList.remove('drag-over');
+  var text = e.dataTransfer.getData('text/plain');
+  if (text) {
+    input.value = text;
+    decodeJWT(text.trim());
+  }
 });
 
 function base64UrlDecode(str) {
-  // Replace URL-safe chars
-  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
-  // Pad
-  while (base64.length % 4) base64 += '=';
-  try {
-    return decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-  } catch (e) {
-    return atob(base64);
-  }
+  str = str.replace(/-/g, '+').replace(/_/g, '/');
+  var pad = str.length % 4;
+  if (pad) str += '='.repeat(4 - pad);
+  return decodeURIComponent(escape(atob(str)));
 }
 
-function decodeJWT() {
-  const raw = jwtInput.value.trim();
-  if (!raw) { clearAll(); return; }
+function decodeJWT(token) {
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
 
-  // Reset
-  hideError();
-  hideTags();
+  if (!token) {
+    statusBar.className = 'status-bar';
+    decoded.classList.remove('visible');
+    return;
+  }
 
-  const parts = raw.split('.');
+  var parts = token.split('.');
   if (parts.length !== 3) {
-    showError('Invalid JWT: Expected 3 parts (header.payload.signature), found ' + parts.length);
+    statusBar.className = 'status-bar error';
+    statusBar.innerHTML = '\u26a0\ufe0f Invalid JWT — Expected 3 parts (header.payload.signature), got ' + parts.length;
+    decoded.classList.remove('visible');
     return;
   }
 
-  // Decode header
   try {
-    const headerJson = base64UrlDecode(parts[0]);
-    decodedHeader = JSON.parse(headerJson);
+    var headerStr = base64UrlDecode(parts[0]);
+    var payloadStr = base64UrlDecode(parts[1]);
+    decodedData.header = JSON.parse(headerStr);
+    decodedData.payload = JSON.parse(payloadStr);
+    decodedData.signature = parts[2];
   } catch (e) {
-    showError('Failed to decode header: ' + e.message);
+    statusBar.className = 'status-bar error';
+    statusBar.innerHTML = '\u26a0\ufe0f Failed to decode — ' + e.message;
+    decoded.classList.remove('visible');
     return;
   }
 
-  // Decode payload
-  try {
-    const payloadJson = base64UrlDecode(parts[1]);
-    decodedPayload = JSON.parse(payloadJson);
-  } catch (e) {
-    showError('Failed to decode payload: ' + e.message);
-    return;
-  }
+  // Algorithm badge
+  document.getElementById('alg-badge').textContent = decodedData.header.alg || 'unknown';
 
-  rawSignature = parts[2];
+  // Render header
+  document.getElementById('header-json').innerHTML = renderJSON(decodedData.header, 'header');
 
-  // Success
-  statusDot.className = 'status-dot valid';
-  statusText.textContent = 'Valid JWT — ' + parts.length + ' parts decoded';
+  // Render payload with claim highlights
+  document.getElementById('payload-json').innerHTML = renderJSON(decodedData.payload, 'payload');
 
-  // Show algorithm tag
-  if (decodedHeader.alg) {
-    const tagAlgo = document.getElementById('tagAlgo');
-    tagAlgo.textContent = decodedHeader.alg;
-    tagAlgo.classList.add('visible');
-  }
+  // Render signature
+  document.getElementById('sig-display').textContent = decodedData.signature;
 
-  // Check expiration
-  checkExpiration();
+  // Expiration status
+  updateExpStatus();
 
-  // Show visual breakdown
-  showVisualBreakdown(parts);
-
-  // Render sections
-  document.getElementById('headerBlock').innerHTML = syntaxHighlight(decodedHeader);
-  document.getElementById('payloadBlock').innerHTML = syntaxHighlight(decodedPayload);
-  document.getElementById('sigBlock').textContent = rawSignature;
-
-  // Render claims
-  renderClaims();
-
-  // Show decoded area
-  emptyState.style.display = 'none';
-  decodedArea.style.display = 'block';
+  decoded.classList.add('visible');
 }
 
-function checkExpiration() {
-  const tagValid = document.getElementById('tagValid');
-  const tagExpired = document.getElementById('tagExpired');
-  const tagNoExp = document.getElementById('tagNoExp');
+function updateExpStatus() {
+  var payload = decodedData.payload;
+  if (!payload) return;
 
-  if (decodedPayload.exp !== undefined) {
-    const expTime = decodedPayload.exp * 1000;
-    const now = Date.now();
-    if (expTime > now) {
-      tagValid.classList.add('visible');
-    } else {
-      tagExpired.classList.add('visible');
-    }
+  if (payload.exp === undefined) {
+    statusBar.className = 'status-bar no-exp';
+    statusBar.innerHTML = '\u26a0\ufe0f No expiration set — This token never expires';
+    return;
+  }
+
+  var now = Math.floor(Date.now() / 1000);
+  var exp = payload.exp;
+  var diff = exp - now;
+
+  if (diff <= 0) {
+    statusBar.className = 'status-bar expired';
+    statusBar.innerHTML = '\u274c Token Expired <span class="countdown">Expired ' + formatDuration(Math.abs(diff)) + ' ago</span>';
   } else {
-    tagNoExp.classList.add('visible');
+    statusBar.className = 'status-bar valid';
+    statusBar.innerHTML = '\u2705 Token Valid <span class="countdown">Expires in ' + formatDuration(diff) + '</span>';
+    countdownInterval = setInterval(function() {
+      var d = payload.exp - Math.floor(Date.now() / 1000);
+      if (d <= 0) {
+        clearInterval(countdownInterval);
+        updateExpStatus();
+        return;
+      }
+      var el = statusBar.querySelector('.countdown');
+      if (el) el.textContent = 'Expires in ' + formatDuration(d);
+    }, 1000);
   }
 }
 
-function showVisualBreakdown(parts) {
-  jwtVisual.innerHTML =
-    '<span class="jwt-part-header">' + escapeHtml(parts[0]) + '</span>' +
-    '<span class="jwt-dot">.</span>' +
-    '<span class="jwt-part-payload">' + escapeHtml(parts[1]) + '</span>' +
-    '<span class="jwt-dot">.</span>' +
-    '<span class="jwt-part-sig">' + escapeHtml(parts[2]) + '</span>';
-  jwtVisual.classList.add('visible');
+function formatDuration(sec) {
+  var d = Math.floor(sec / 86400);
+  var h = Math.floor((sec % 86400) / 3600);
+  var m = Math.floor((sec % 3600) / 60);
+  var s = sec % 60;
+  var parts = [];
+  if (d > 0) parts.push(d + 'd');
+  if (h > 0) parts.push(h + 'h');
+  if (m > 0) parts.push(m + 'm');
+  parts.push(s + 's');
+  return parts.join(' ');
 }
 
 function escapeHtml(str) {
-  return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
-function syntaxHighlight(obj) {
-  const json = JSON.stringify(obj, null, 2);
-  return json.replace(/("(?:\\.|[^"\\])*")\s*:/g, '<span class="syn-key">$1</span>:')
-    .replace(/:\s*("(?:\\.|[^"\\])*")/g, ': <span class="syn-string">$1</span>')
-    .replace(/:\s*(\d+\.?\d*)/g, ': <span class="syn-number">$1</span>')
-    .replace(/:\s*(true|false)/g, ': <span class="syn-boolean">$1</span>')
-    .replace(/:\s*(null)/g, ': <span class="syn-null">$1</span>')
-    // Handle array string values
-    .replace(/\[\s*/g, '<span class="syn-brace">[</span> ')
-    .replace(/\s*\]/g, ' <span class="syn-brace">]</span>')
-    // Highlight standalone strings in arrays
-    .replace(/(?<=<\/span> |^  )("(?:\\.|[^"\\])*")(?=,?\s)/gm, '<span class="syn-string">$1</span>');
-}
+function renderJSON(obj, section) {
+  var json = JSON.stringify(obj, null, 2);
+  var lines = json.split('\n');
+  var html = '';
 
-const registeredClaims = {
-  iss: 'Issuer',
-  sub: 'Subject',
-  aud: 'Audience',
-  exp: 'Expiration',
-  nbf: 'Not Before',
-  iat: 'Issued At',
-  jti: 'JWT ID'
-};
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i];
+    var match = line.match(/^(\s*)"([^"]+)":\s*(.+?)([,]?)$/);
+    if (match) {
+      var indent = match[1];
+      var key = match[2];
+      var value = match[3];
+      var comma = match[4] || '';
+      var desc = CLAIM_DESCRIPTIONS[key];
+      var isHighlighted = section === 'payload' && HIGHLIGHTED_CLAIMS.has(key);
+      var isTimestamp = (key === 'exp' || key === 'iat' || key === 'nbf') && typeof obj[key] === 'number';
 
-function renderClaims() {
-  const grid = document.getElementById('claimsGrid');
-  const section = document.getElementById('claimsSection');
-  grid.innerHTML = '';
+      var valueHtml = colorizeValue(value);
 
-  let hasClaims = false;
-
-  for (const [key, label] of Object.entries(registeredClaims)) {
-    if (decodedPayload[key] !== undefined) {
-      hasClaims = true;
-      const row = document.createElement('div');
-      row.className = 'claim-row';
-
-      const nameEl = document.createElement('div');
-      nameEl.className = 'claim-name';
-      nameEl.textContent = key;
-
-      const labelEl = document.createElement('div');
-      labelEl.className = 'claim-label';
-      labelEl.textContent = label;
-
-      const valueEl = document.createElement('div');
-      valueEl.className = 'claim-value';
-
-      if (key === 'exp' || key === 'iat' || key === 'nbf') {
-        const ts = decodedPayload[key];
-        const date = new Date(ts * 1000);
-        const dateStr = date.toLocaleString('en-US', {
-          weekday: 'short',
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-          hour: '2-digit',
-          minute: '2-digit',
-          second: '2-digit',
-          timeZoneName: 'short'
-        });
-
-        if (key === 'exp') {
-          const now = Date.now();
-          const expTime = ts * 1000;
-          if (expTime > now) {
-            const diff = expTime - now;
-            valueEl.innerHTML = '<span class="exp-valid">✓ ' + escapeHtml(dateStr) + '</span>' +
-              '<span class="time-relative">(' + formatTimeDiff(diff) + ' from now)</span>';
-          } else {
-            const diff = now - expTime;
-            valueEl.innerHTML = '<span class="exp-expired">✗ ' + escapeHtml(dateStr) + '</span>' +
-              '<span class="time-relative">(expired ' + formatTimeDiff(diff) + ' ago)</span>';
-          }
-        } else {
-          const diff = Date.now() - ts * 1000;
-          valueEl.innerHTML = escapeHtml(dateStr) +
-            '<span class="time-relative">(' + formatTimeDiff(Math.abs(diff)) + ' ago)</span>';
-        }
-      } else if (typeof decodedPayload[key] === 'object') {
-        valueEl.textContent = JSON.stringify(decodedPayload[key]);
-      } else {
-        valueEl.textContent = String(decodedPayload[key]);
+      // Add human-readable time for timestamps
+      if (isTimestamp) {
+        var ts = obj[key];
+        var date = new Date(ts * 1000);
+        var readable = date.toLocaleString();
+        var isExpired = key === 'exp' && ts < Math.floor(Date.now() / 1000);
+        var cls = key === 'exp' ? (isExpired ? 'exp-value expired' : 'exp-value valid') : '';
+        valueHtml = '<span class="' + cls + '">' + escapeHtml(value) + '</span>';
+        valueHtml += ' <span style="color:var(--text-dim);font-size:0.76rem">// ' + escapeHtml(readable) + '</span>';
       }
 
-      row.appendChild(nameEl);
-      row.appendChild(labelEl);
-      row.appendChild(valueEl);
-      grid.appendChild(row);
+      var lineHtml;
+      if (desc) {
+        var wrapCls = isHighlighted ? ' claim-highlight' : '';
+        lineHtml = '<span class="claim-row' + wrapCls + '">' + indent + '<span class="json-key">"' + escapeHtml(key) + '"</span>: ' + valueHtml + comma + '<span class="claim-tooltip">' + escapeHtml(desc) + '</span></span>';
+      } else {
+        lineHtml = indent + '<span class="json-key">"' + escapeHtml(key) + '"</span>: ' + valueHtml + comma;
+      }
+
+      html += lineHtml + '\n';
+    } else {
+      html += escapeHtml(line) + '\n';
     }
   }
 
-  section.style.display = hasClaims ? '' : 'none';
+  return html;
 }
 
-function formatTimeDiff(ms) {
-  const seconds = Math.floor(ms / 1000);
-  if (seconds < 60) return seconds + 's';
-  const minutes = Math.floor(seconds / 60);
-  if (minutes < 60) return minutes + 'm';
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return hours + 'h ' + (minutes % 60) + 'm';
-  const days = Math.floor(hours / 24);
-  if (days < 365) return days + 'd';
-  const years = Math.floor(days / 365);
-  const remainDays = days % 365;
-  return years + 'y ' + remainDays + 'd';
-}
-
-function showError(msg) {
-  statusDot.className = 'status-dot invalid';
-  statusText.textContent = 'Invalid JWT';
-  errorText.textContent = msg;
-  errorBar.classList.add('visible');
-  emptyState.style.display = 'none';
-  decodedArea.style.display = 'none';
-}
-
-function hideError() {
-  errorBar.classList.remove('visible');
-}
-
-function hideTags() {
-  document.querySelectorAll('.tag').forEach(t => t.classList.remove('visible'));
-}
-
-function loadExample(name) {
-  jwtInput.value = examples[name];
-  decodeJWT();
-  showToast('Loaded ' + name + ' example');
-}
-
-function clearAll() {
-  jwtInput.value = '';
-  decodedHeader = null;
-  decodedPayload = null;
-  rawSignature = '';
-  statusDot.className = 'status-dot empty';
-  statusText.textContent = 'Paste a JWT to get started';
-  hideError();
-  hideTags();
-  jwtVisual.classList.remove('visible');
-  jwtVisual.innerHTML = '';
-  decodedArea.style.display = 'none';
-  emptyState.style.display = '';
+function colorizeValue(val) {
+  val = val.trim();
+  if (val.startsWith('"')) return '<span class="json-string">' + escapeHtml(val) + '</span>';
+  if (val === 'true' || val === 'false') return '<span class="json-boolean">' + val + '</span>';
+  if (val === 'null') return '<span class="json-null">null</span>';
+  if (!isNaN(val) && val !== '') return '<span class="json-number">' + val + '</span>';
+  return escapeHtml(val);
 }
 
 function copySection(section) {
-  let text = '';
-  if (section === 'header') text = JSON.stringify(decodedHeader, null, 2);
-  else if (section === 'payload') text = JSON.stringify(decodedPayload, null, 2);
-  else if (section === 'signature') text = rawSignature;
-  if (!text) { showToast('Nothing to copy'); return; }
-  navigator.clipboard.writeText(text).then(() => showToast('Copied ' + section + '!'));
-}
+  var text;
+  if (section === 'header') text = JSON.stringify(decodedData.header, null, 2);
+  else if (section === 'payload') text = JSON.stringify(decodedData.payload, null, 2);
+  else text = decodedData.signature;
 
-function copyAll() {
-  if (!decodedHeader || !decodedPayload) { showToast('Nothing to copy'); return; }
-  const all = JSON.stringify({
-    header: decodedHeader,
-    payload: decodedPayload,
-    signature: rawSignature
-  }, null, 2);
-  navigator.clipboard.writeText(all).then(() => showToast('Copied all decoded sections!'));
-}
-
-function showToast(msg) {
-  toast.textContent = msg;
-  toast.classList.add('visible');
-  clearTimeout(toast._timer);
-  toast._timer = setTimeout(() => toast.classList.remove('visible'), 2000);
-}
-
-function showSupport(e) {
-  e.preventDefault();
-  document.getElementById('supportModal').classList.add('visible');
-}
-
-function closeSupport(e) {
-  e.preventDefault();
-  document.getElementById('supportModal').classList.remove('visible');
+  navigator.clipboard.writeText(text).then(function() {
+    var btns = document.querySelectorAll('.copy-btn');
+    var sectionMap = { header: 0, payload: 1, signature: 2 };
+    var btn = btns[sectionMap[section]];
+    btn.textContent = 'Copied!';
+    btn.classList.add('copied');
+    setTimeout(function() { btn.textContent = 'Copy'; btn.classList.remove('copied'); }, 1500);
+  });
 }
 
 function copyWallet() {
-  navigator.clipboard.writeText('0x59c7D3E9926403FBfdA678503827eFF0c5390D83').then(() => showToast('Wallet address copied!'));
+  navigator.clipboard.writeText('0x59c7D3E9926403FBfdA678503827eFF0c5390D83').then(function() {
+    document.getElementById('wallet-hint').textContent = '\u2713 Copied!';
+    setTimeout(function() { document.getElementById('wallet-hint').textContent = 'Click to copy address'; }, 2000);
+  });
 }
 
-// URL params
-(function() {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get('token')) {
-    jwtInput.value = decodeURIComponent(params.get('token'));
-    decodeJWT();
+function loadSample() {
+  var header = { alg: 'HS256', typ: 'JWT' };
+  var now = Math.floor(Date.now() / 1000);
+  var payload = {
+    iss: 'cristol.dev',
+    sub: '1234567890',
+    aud: 'https://api.example.com',
+    name: 'Jane Developer',
+    email: 'jane@example.com',
+    role: 'admin',
+    iat: now - 300,
+    nbf: now - 300,
+    exp: now + 3600,
+    jti: 'abc-123-def-456'
+  };
+
+  function b64url(obj) {
+    return btoa(JSON.stringify(obj))
+      .replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
   }
-})();
+
+  var token = b64url(header) + '.' + b64url(payload) + '.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk';
+  input.value = token;
+  decodeJWT(token);
+}
+
+function clearAll() {
+  input.value = '';
+  statusBar.className = 'status-bar';
+  decoded.classList.remove('visible');
+  decodedData = { header: null, payload: null, signature: '' };
+  if (countdownInterval) { clearInterval(countdownInterval); countdownInterval = null; }
+}
+
+// Auto-decode if URL hash contains a JWT
+if (window.location.hash.length > 1) {
+  var token = decodeURIComponent(window.location.hash.slice(1));
+  input.value = token;
+  decodeJWT(token);
+}
 </script>
 
 </body>
