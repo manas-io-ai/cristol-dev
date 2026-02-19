@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+$(for f in index.html blog.html tools.html json.html jwt.html base64.html best-trading-tools.html ecommerce-tools.html options-trading-guide.html luxury-reselling.html ai-developer-tools.html best-sports-betting-tools.html crypto-trading-beginners.html best-reselling-apps.html passive-income-tools.html stock-market-tools.html forex-trading-tools.html side-hustle-ideas.html sneaker-reselling-guide.html day-trading-strategies.html make-money-online.html; do
+echo "  <url><loc>https://manas-io-ai.github.io/cristol-dev/$f</loc><lastmod>2026-02-19</lastmod></url>"
+done)
+</urlset>

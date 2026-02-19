@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://manas-io-ai.github.io/cristol-dev/sitemap.xml
